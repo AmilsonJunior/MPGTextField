@@ -4,6 +4,8 @@
 //  Created by Gaurav Wadhwani on 05/06/14.
 //  Copyright (c) 2014 Mappgic. All rights reserved.
 //
+// MODIFICADO POR AMILSON JR.
+// NÃO SUBSTITUIR ESTE ARQUIVO!
 
 #import "MPGTextField.h"
 
@@ -128,7 +130,8 @@ NSArray *data;
     {
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
-    
+    cell.textLabel.font = [UIFont systemFontOfSize: 10];
+    cell.textLabel.textAlignment = NSTextAlignmentCenter;
     NSDictionary *dataForRowAtIndexPath = [[self applyFilterWithSearchQuery:self.text] objectAtIndex:indexPath.row];
     [cell setBackgroundColor:[UIColor clearColor]];
     [[cell textLabel] setText:[dataForRowAtIndexPath objectForKey:@"DisplayText"]];
@@ -147,9 +150,19 @@ NSArray *data;
 
 #pragma mark Filter Method
 
+//AJ
 - (NSArray *)applyFilterWithSearchQuery:(NSString *)filter
 {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"DisplayText BEGINSWITH[cd] %@", filter];
+    NSString *original = filter;
+    
+    NSString *squashed = [original stringByReplacingOccurrencesOfString:@"[ ]+"
+                                                             withString:@" "
+                                                                options:NSRegularExpressionSearch
+                                                                  range:NSMakeRange(0, original.length)];
+    
+    NSString *final = [squashed stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"DisplayText CONTAINS[cd] %@", final];
     NSArray *filteredGoods = [NSArray arrayWithArray:[data filteredArrayUsingPredicate:predicate]];
     return filteredGoods;
 }
